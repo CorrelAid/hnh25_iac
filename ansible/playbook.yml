@@ -1,0 +1,51 @@
+---
+- name: Main Playbook
+  hosts: all
+  gather_facts: true
+  become: false
+  vars_files:
+    - group_vars/group_vars.yml
+  vars:
+    universal_auth_client_id: "{{ lookup('ansible.builtin.env', 'TF_VAR_infisical_client_id') }}"
+    universal_auth_client_secret: "{{ lookup('ansible.builtin.env', 'TF_VAR_infisical_client_secret') }}"
+    project_id: "c6b11c29-4e36-472e-93be-54130b65a987"
+    path: "/"
+    env_slug: "prod"
+    HETZNER_CORRELAID_DE_SMTP: >-
+      {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='HETZNER_CORRELAID_DE_SMTP', env_slug=env_slug) }}
+    DO_SPACES_ACCESS_ID: >-
+      {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DO_SPACES_ACCESS_ID', env_slug=env_slug) }}
+    DO_SPACES_SECRET_KEY: >-
+      {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DO_SPACES_SECRET_KEY', env_slug=env_slug) }}
+    DRIBDAT_SECRET: >-
+      {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_SECRET', env_slug=env_slug) }}
+    DRIBDAT_APIKEY: >-
+      {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_APIKEY', env_slug=env_slug) }}
+    DRIBDAT_ADMIN_PW:
+      "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_ADMIN_PW', env_slug=env_slug) }}"
+    DRIBDAT_ADMIN_MAIL:
+       "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_ADMIN_MAIL', env_slug=env_slug) }}"
+    DRIBDAT_ADMIN_USER:   
+      "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_ADMIN_USER', env_slug=env_slug) }}"
+
+  tasks:
+    - name: Deploy Caddy 
+      ansible.builtin.include_tasks: "tasks/deploy_caddy.yml"
+    - name: Deploy dribdat
+      ansible.builtin.include_tasks: "tasks/deploy_dribdat.yml"

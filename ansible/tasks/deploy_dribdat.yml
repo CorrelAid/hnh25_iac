@@ -1,0 +1,86 @@
+---
+- name: Create dir for dribdat
+  ansible.builtin.file:
+    path: "/home/{{  ansible_user }}/dribdat"
+    state: directory
+    owner: "{{  ansible_user }}"
+    mode: "0775"
+
+- name: Copy datapackage to server
+  ansible.builtin.template:
+    src: "files/datapackage.json"
+    dest: "/home/{{ ansible_user }}/dribdat/datapackage.json"
+    mode: "0775"
+
+- name: Template dribdat docker compose to server
+  ansible.builtin.template:
+    src: "templates/dribdat/docker-compose.yml.jinja"
+    dest: "/home/{{ ansible_user }}/dribdat/docker-compose.yml"
+    mode: "0775"
+
+- name: Check if the flag file exists
+  ansible.builtin.stat:
+    path: "/home/{{ ansible_user }}/dribdat/dribdat_setup_done"
+  register: flag_file_check_lc
+
+- name: Initial Dribdat Setup
+  when: not flag_file_check_lc.stat.exists
+  block:
+    - name: Run Migrations for dribdat
+      ansible.builtin.shell: |
+        docker compose run --rm dribdat-web ./release.sh  
+      args:
+        executable: /bin/bash
+        chdir: "/home/{{ ansible_user }}/dribdat/"
+
+    - name: Deploying dribdat
+      community.docker.docker_compose_v2:
+        project_src: "/home/{{ ansible_user }}/dribdat/"
+        state: present
+
+    - name: Create initial admin user
+      ansible.builtin.shell: |
+        cat << 'EOF' | docker compose exec -T dribdat-web ./manage.py shell
+        from dribdat.user.models import User
+        from dribdat.database import db
+
+        admin_user = User(
+            username='{{ DRIBDAT_ADMIN_USER }}', 
+            email='{{ DRIBDAT_ADMIN_MAIL }}', 
+            fullname='System Administrator'
+        )
+        admin_user.set_password('{{ DRIBDAT_ADMIN_PW.value }}')
+        admin_user.active = True  
+        admin_user.is_admin = True
+        db.session.add(admin_user)
+        db.session.commit()
+        print('Admin user created successfully!')
+
+        # Verify the user was created
+        if User.query.filter_by(username='{{ DRIBDAT_ADMIN_USER }}').first():
+            print("Admin verified in database!")
+        else:
+            raise RuntimeError("Admin user creation failed!")
+        EOF
+      args:
+        executable: /bin/bash
+        chdir: "/home/{{ ansible_user }}/dribdat/"
+
+    - name: Create event
+      ansible.builtin.shell: |
+        docker compose exec -T dribdat-web ./cli.py imports /app/datapackage.json full
+      args:
+        executable: /bin/bash
+        chdir: "/home/{{ ansible_user }}/dribdat/"
+
+    - name: Create flag file when successful
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/dribdat/dribdat_setup_done"
+        state: touch
+        mode: "0644"
+
+- name: Deploying dribdat
+  when: flag_file_check_lc.stat.exists
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user }}/dribdat/"
+    state: present

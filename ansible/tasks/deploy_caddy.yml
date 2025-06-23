@@ -1,0 +1,56 @@
+---
+- name: Create dir for Caddy
+  ansible.builtin.file:
+    path: "/home/{{  ansible_user }}/caddy"
+    state: directory
+    owner: "{{  ansible_user }}"
+    mode: "0775"
+
+- name: Copy files to fileserver folder
+  ansible.builtin.copy:
+    src: "files/staticfiles/"
+    dest: "/var/www/staticfiles"
+    mode: "0775"
+    owner: "{{  ansible_user }}"
+  become: true
+
+- name: Template Caddyfile
+  ansible.builtin.template:
+    src: "templates/caddy/Caddyfile.j2"
+    dest: "/home/{{ ansible_user }}/caddy/Caddyfile"
+    mode: "0775"
+
+- name: Create folder for caddy data
+  ansible.builtin.file:
+    path: "/home/{{  ansible_user }}/caddy/data"
+    state: directory
+    owner: "{{  ansible_user }}"
+    mode: "0775"
+
+- name: Create folder for caddy config
+  ansible.builtin.file:
+    path: "/home/{{  ansible_user }}/caddy/config"
+    state: directory
+    owner: "{{  ansible_user }}"
+    mode: "0775"
+
+- name: Template caddy docker compose to server
+  ansible.builtin.template:
+    src: "templates/caddy/docker-compose.yml.jinja"
+    dest: "/home/{{ ansible_user }}/caddy/docker-compose.yml"
+    mode: "0775"
+
+- name: Create Caddy network
+  community.docker.docker_network:
+    name: caddy
+    state: present
+
+- name: Restart Caddy
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user }}/caddy/"
+    state: restarted
+
+- name: Deploy Caddy
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user }}/caddy/"
+    state: present

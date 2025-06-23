@@ -1,0 +1,6 @@
+[servers]
+hnh25 ansible_host=hnh25.netbird.cloud
+
+[all:vars]
+ansible_user=correlaid
+    

@@ -1,0 +1,124 @@
+#cloud-config
+
+###########################################
+# BASIC SYSTEM CONFIGURATION
+###########################################
+# Set system locale, timezone and hostname
+locale: en_US.UTF-8
+timezone: Europe/Berlin
+hostname: ${hostname}
+
+# Enable automatic package management
+package_update: true
+package_upgrade: true
+package_reboot_if_required: false
+manage_etc_hosts: true
+
+###########################################
+# PACKAGE INSTALLATION
+###########################################
+# Install essential system packages
+packages:
+  - fail2ban          # Security tool to prevent brute force attacks
+  - ca-certificates   # SSL/TLS certificates
+  - ansible
+  - jq
+
+###########################################
+# USER MANAGEMENT
+###########################################
+# Configure system users and SSH access
+users:
+  - default
+  - name: ${user}
+    groups: sudo
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    lock_passwd: true
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - "${public_ssh_key}"
+
+###########################################
+# SYSTEM FILES CONFIGURATION
+###########################################
+write_files:
+  # Automatic updates configuration
+  - path: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "1";
+      APT::Periodic::Unattended-Upgrade "1";
+
+  # Custom unattended upgrades settings
+  - path: /etc/apt/apt.conf.d/51unattended-upgrades-custom
+    content: |
+      # Define allowed package origins for automatic updates
+      Unattended-Upgrade::Allowed-Origins {
+        "Ubuntu:${distro_code}";
+        "Ubuntu:${distro_code}-security";
+        "UbuntuESMApps:${distro_code}-apps-security";
+        "UbuntuESM:${distro_code}-infra-security";
+        "Ubuntu:${distro_code}-updates";
+        "Docker:stable";
+        "Netbird:stable";
+        };
+
+
+      # Upgrade behavior settings
+      Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+      Unattended-Upgrade::MinimalSteps "true";
+      Unattended-Upgrade::Download-Only "true";
+      Unattended-Upgrade::SyslogEnable "true";
+
+      # Cleanup settings
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+      Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+
+      # Reboot settings
+      Unattended-Upgrade::Automatic-Reboot "false";
+
+###########################################
+# SYSTEM INITIALIZATION COMMANDS
+###########################################
+runcmd:
+  # Install Docker 
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  - apt-get update
+  - apt-get install -y docker-ce docker-ce-cli
+  - usermod -aG docker ${user}
+
+  # Start and enable fail2ban
+  - systemctl start fail2ban
+  - systemctl enable fail2ban
+
+  # Add Fail2Ban ignore IPs for netbird
+  - cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+  - cp /etc/fail2ban/jail.local /etc/fail2ban/jail.local.bak
+  - sed -i '/ignoreip/d' /etc/fail2ban/jail.local
+  - echo "[DEFAULT]" | tee -a /etc/fail2ban/jail.local
+  - echo "ignoreip = 127.0.0.1/8 ::1 35.186.199.111 2600:1901:0:adb3::" | tee -a /etc/fail2ban/jail.local
+  - systemctl restart fail2ban
+
+  # Set up netbird
+  - curl -sSL https://pkgs.netbird.io/debian/public.key | gpg --dearmor --output /usr/share/keyrings/netbird-archive-keyring.gpg
+  - echo "deb [signed-by=/usr/share/keyrings/netbird-archive-keyring.gpg] https://pkgs.netbird.io/debian stable main" | tee /etc/apt/sources.list.d/netbird.list
+  - apt-get update
+  - apt-get install -y netbird
+  - netbird up --setup-key "${netbird_setup_key}"
+
+  # Configure SSH security
+  - sed -i '/PermitRootLogin/d' /etc/ssh/sshd_config
+  - echo "PermitRootLogin no" >> /etc/ssh/sshd_config
+  - sed -i '/AllowUsers/d' /etc/ssh/sshd_config
+  - echo "AllowUsers ${user}" >> /etc/ssh/sshd_config
+  - systemctl restart ssh
+
+###########################################
+# COMPLETION MESSAGE
+###########################################
+final_message: "The system is ready, after $UPTIME seconds"

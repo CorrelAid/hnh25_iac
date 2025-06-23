@@ -1,0 +1,26 @@
+[project]
+name = "hnh25"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ansible-lint>=6.8.7",
+    "ansible>=10.5.0",
+    "pre-commit",
+    "rich>=13.9.4",
+    "infisicalsdk>=1.0.8",
+]
+
+[dependency-groups]
+testing = [
+    "pytest>=8.3.4",
+]
+
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning"
+]
+
+

@@ -1,0 +1,23 @@
+services:
+  caddy:
+      image: caddy:2.8.4-alpine
+      container_name: caddy
+      hostname: caddy
+      restart: unless-stopped
+      cap_add:
+         - NET_ADMIN
+      ports:
+        - "80:80"
+        - "443:443"
+        - "443:443/udp"
+      volumes:
+        - /home/{{  ansible_user }}/caddy/Caddyfile:/etc/caddy/Caddyfile
+        - /home/{{  ansible_user }}/caddy/data:/data 
+        - /home/{{  ansible_user }}/caddy/config:/config 
+        - /var/www/staticfiles:/var/www/staticfiles:ro
+      networks:
+        - caddy
+
+networks:
+  caddy:
+    external: true

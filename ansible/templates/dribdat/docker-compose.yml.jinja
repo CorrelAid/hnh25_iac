@@ -1,0 +1,75 @@
+services:
+  dribdat-web:
+    image: dribdat/dribdat:v0.9.0
+    container_name: dribdat-web
+    hostname: dribdat-web
+    restart: unless-stopped
+    ports:
+        - 5000
+    networks:
+        - caddy
+        - postgres
+    environment:
+        - TIME_ZONE=Europe/Berlin
+        - SERVER_URL={{ fqdn }}
+        - DATABASE_URL=postgres://postgres:postgres@dribdat-db:5432/dribdat
+        - DRIBDAT_ENV=prod
+        - DRIBDAT_SECRET={{ DRIBDAT_SECRET.value }}
+        - DRIBDAT_APIKEY={{ DRIBDAT_APIKEY.value }}
+
+        - DRIBDAT_ALLOW_LOGINS=True
+        - DRIBDAT_NOT_REGISTER=False
+        - DRIBDAT_ALLOW_EVENTS=False
+        - DRIBDAT_SOCIAL_LINKS=False
+        - DRIBDAT_USER_APPROVE=True
+
+        - MAIL_SERVER=mail.your-server.de
+        - MAIL_PORT=587
+        - MAIL_USERNAME=mail@correlaid.de
+        - MAIL_PASSWORD={{ HETZNER_CORRELAID_DE_SMTP.value }}
+        - MAIL_DEFAULT_SENDER=mail@correlaid.de
+        - MAIL_USE_TLS=False
+
+        - S3_KEY={{ DO_SPACES_ACCESS_ID.value }}
+        - S3_SECRET={{ DO_SPACES_SECRET_KEY.value }}
+        - S3_BUCKET={{ s3_bucket_name }}
+        - S3_REGION={{ s3_region }}
+        - S3_HTTPS=https://{{ s3_cdn_endpoint }}
+        - S3_ENDPOINT=https://{{ s3_endpoint }}
+        - MAX_CONTENT_LENGTH=1048576
+
+        - LLM_BASE_URL=https://openrouter.ai/api/v1
+        - LLM_API_KEY=
+        - LLM_MODEL="google/gemma-3-27b-it:free"
+    volumes:
+      - /home/{{ ansible_user }}/dribdat/datapackage.json:/app/datapackage.json:ro
+    depends_on:
+      dribdat-db:
+        condition: service_healthy
+
+  dribdat-db:
+    image: postgres:16.9-alpine
+    container_name: dribdat-db
+    hostname: dribdat-db
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=dribdat
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+        - postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+
+networks:
+  postgres:
+  caddy:
+    external: true

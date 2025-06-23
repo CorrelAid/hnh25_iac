@@ -1,0 +1,20 @@
+{
+    servers {
+        metrics
+    }
+
+    admin :2019 {
+        origins *
+    }
+}
+
+{{ fqdn }} {
+    reverse_proxy dribdat-web:5000
+}
+
+{{ fqdn_static }} {
+    root * /var/www/staticfiles
+    file_server {
+        browse
+    }
+}
