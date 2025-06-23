@@ -45,8 +45,8 @@
         from dribdat.database import db
 
         admin_user = User(
-            username='{{ DRIBDAT_ADMIN_USER }}', 
-            email='{{ DRIBDAT_ADMIN_MAIL }}', 
+            username='{{ DRIBDAT_ADMIN_USER.value }}', 
+            email='{{ DRIBDAT_ADMIN_MAIL.value }}', 
             fullname='System Administrator'
         )
         admin_user.set_password('{{ DRIBDAT_ADMIN_PW.value }}')
@@ -57,7 +57,7 @@
         print('Admin user created successfully!')
 
         # Verify the user was created
-        if User.query.filter_by(username='{{ DRIBDAT_ADMIN_USER }}').first():
+        if User.query.filter_by(username='{{ DRIBDAT_ADMIN_USER.value }}').first():
             print("Admin verified in database!")
         else:
             raise RuntimeError("Admin user creation failed!")

@@ -18,7 +18,7 @@ services:
         - DRIBDAT_APIKEY={{ DRIBDAT_APIKEY.value }}
 
         - DRIBDAT_ALLOW_LOGINS=True
-        - DRIBDAT_NOT_REGISTER=False
+        - DRIBDAT_NOT_REGISTER=True
         - DRIBDAT_ALLOW_EVENTS=False
         - DRIBDAT_SOCIAL_LINKS=False
         - DRIBDAT_USER_APPROVE=True
@@ -36,7 +36,7 @@ services:
         - S3_REGION={{ s3_region }}
         - S3_HTTPS=https://{{ s3_cdn_endpoint }}
         - S3_ENDPOINT=https://{{ s3_endpoint }}
-        - MAX_CONTENT_LENGTH=1048576
+        - MAX_CONTENT_LENGTH=20971520
 
         - LLM_BASE_URL=https://openrouter.ai/api/v1
         - LLM_API_KEY=

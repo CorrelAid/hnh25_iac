@@ -10,6 +10,7 @@ dependencies = [
     "pre-commit",
     "rich>=13.9.4",
     "infisicalsdk>=1.0.8",
+    "pytest>=8.3.5",
 ]
 
 [dependency-groups]
