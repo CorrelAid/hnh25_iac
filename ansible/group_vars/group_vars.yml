@@ -1,8 +1,9 @@
 ---
-fqdn: hack.correlaid.org
-fqdn_static: static.hack.correlaid.org
+fqdn: hackbase.correlaid.org
+fqdn_static: static.hackbase.correlaid.org
 netbird_group_id: d18tdb3l0ubs73ara74g
 s3_bucket_name: hnh25
+s3_backupbucket_name: hnh25backup
 s3_endpoint: fra1.digitaloceanspaces.com
 s3_region: fra1
 s3_cdn_endpoint: hnh25.fra1.cdn.digitaloceanspaces.com

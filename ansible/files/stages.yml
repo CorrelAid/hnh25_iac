@@ -32,8 +32,7 @@ stages:
         -
           field: team
           min: 1
-          max: 5
-          help: Between 1 and 5 people should join your project or expedition.
+          help: At least one person should join your project or expedition.
       agree:
         - All team members are committed to participating actively throughout the event duration.
         - You have established clear communication methods and agreed on collaboration tools.

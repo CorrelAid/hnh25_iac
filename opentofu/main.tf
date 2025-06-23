@@ -93,6 +93,7 @@ resource "hcloud_server" "main" {
   image       = var.vps.image
   server_type = var.vps.size
   location    = var.vps.region
+  backups = true
   public_net {
     ipv6_enabled = false
     ipv4_enabled = true
@@ -168,7 +169,7 @@ resource "hcloud_firewall_attachment" "main" {
   server_ids  = [hcloud_server.main.id]
 }
 
-
+#############
 resource "digitalocean_spaces_bucket" "main" {
   name   = var.project_settings.name
   region = var.do_region
@@ -179,6 +180,15 @@ resource "digitalocean_cdn" "mycdn" {
   origin = digitalocean_spaces_bucket.main.bucket_domain_name
 }
 
+#############
+
+resource "digitalocean_spaces_bucket" "backup" {
+  name   = "${var.project_settings.name}backup"
+  region = var.do_region
+}
+
+
+#############
 
 resource "digitalocean_project" "main" {
   name = var.project_settings.name
@@ -187,7 +197,7 @@ resource "digitalocean_project" "main" {
 resource "digitalocean_project_resources" "main" {
   project = digitalocean_project.main.id
   resources = [
-    digitalocean_spaces_bucket.main.urn
+    digitalocean_spaces_bucket.main.urn,digitalocean_spaces_bucket.backup.urn
   ]
 }
 
@@ -277,6 +287,7 @@ resource "local_file" "group_vars" {
       domain           = var.dns.zone
       netbird_group_id = restapi_object.group.api_data.id
       s3_bucket_name   = digitalocean_spaces_bucket.main.name
+      s3_backupbucket_name   = digitalocean_spaces_bucket.backup.name
       s3_endpoint      = digitalocean_spaces_bucket.main.endpoint
       s3_region        = digitalocean_spaces_bucket.main.region
       s3_cdn_endpoint = digitalocean_cdn.mycdn.endpoint

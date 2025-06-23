@@ -10,7 +10,6 @@ services:
         - caddy
         - postgres
     environment:
-        - TIME_ZONE=Europe/Berlin
         - SERVER_URL={{ fqdn }}
         - DATABASE_URL=postgres://postgres:postgres@dribdat-db:5432/dribdat
         - DRIBDAT_ENV=prod
@@ -47,19 +46,19 @@ services:
       dribdat-db:
         condition: service_healthy
 
+
   dribdat-db:
-    image: postgres:16.9-alpine
+    image: lafayettegabe/wald:latest
     container_name: dribdat-db
     hostname: dribdat-db
     restart: unless-stopped
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=dribdat
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env
     networks:
         - postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - walgdata:/var/log/wal-g
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
       interval: 20s
@@ -68,6 +67,8 @@ services:
 
 volumes:
   pgdata:
+    external: True
+  walgdata:
 
 networks:
   postgres:

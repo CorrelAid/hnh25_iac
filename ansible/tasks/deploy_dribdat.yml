@@ -24,6 +24,16 @@
     dest: "/home/{{ ansible_user }}/dribdat/stages.yml"
     mode: "0775"
 
+- name: Template postgres .env
+  ansible.builtin.template:
+    src: "templates/dribdat/.env.j2"
+    dest: "/home/{{ ansible_user }}/dribdat/.env"
+    mode: "0775"
+
+- name: Create a volume
+  community.docker.docker_volume:
+    name: pgdata
+
 - name: Template dribdat docker compose to server
   ansible.builtin.template:
     src: "templates/dribdat/docker-compose.yml.jinja"
