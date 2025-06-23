@@ -12,6 +12,18 @@
     dest: "/home/{{ ansible_user }}/dribdat/datapackage.json"
     mode: "0775"
 
+- name: Copy terms.md to server
+  ansible.builtin.template:
+    src: "files/terms.md"
+    dest: "/home/{{ ansible_user }}/dribdat/terms.md"
+    mode: "0775"
+
+- name: Copy stages to server
+  ansible.builtin.template:
+    src: "files/stages.yml"
+    dest: "/home/{{ ansible_user }}/dribdat/stages.yml"
+    mode: "0775"
+
 - name: Template dribdat docker compose to server
   ansible.builtin.template:
     src: "templates/dribdat/docker-compose.yml.jinja"

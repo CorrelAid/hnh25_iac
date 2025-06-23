@@ -1,0 +1,57 @@
+stages:
+  -
+    id: 0
+    name: PITCH
+    phase: Pitch
+    description: Transform your ideas into compelling data-driven challenges that address real-world problems
+    tip: Advance to the next stage by posting an update when you have added a summary and a pitch.
+    emoji: 💡
+    conditions:
+      validate:
+        -
+          field: summary
+          min: 5
+          help: Your challenge should have a short summary.
+        -
+          field: excerpt
+          min: 123
+          help: Write at least one paragraph into the Pitch.
+      agree:
+        - Your challenge clearly defines the problem you want to solve and the questions you aim to answer.
+        - You have identified potential data sources and considered their accessibility within the event timeframe.
+        - Your project scope is realistic and achievable given the available time and resources.
+  -
+    id: 5
+    name: PROJECT
+    phase: Project
+    description: Active development phase where your team collaborates to build solutions and analyze data
+    tip: Advance to the next stage by posting an update when your project has been joined by at least one person.
+    emoji: ⚙️
+    conditions:
+      validate:
+        -
+          field: team
+          min: 1
+          max: 5
+          help: Between 1 and 5 people should join your project or expedition.
+      agree:
+        - All team members are committed to participating actively throughout the event duration.
+        - You have established clear communication methods and agreed on collaboration tools.
+        - Team roles and responsibilities have been discussed and assigned based on skills and interests.
+  -
+    id: 10
+    name: PRESENTATION
+    phase: Presentation
+    description: Showcase your completed work with compelling presentations that demonstrate impact and insights
+    tip: Advance to the next stage by posting an update when you have uploaded or provided a link to your presentation.
+    emoji: 🎤
+    conditions:
+      validate:
+        -
+          field: webpage_url
+          test: validurl
+          help: Online access to see your presentation, dataset, or demo in the Project Link.
+      agree:
+        - You have prepared a presentation that clearly communicates your project's objectives, methods, and outcomes.
+        - Your materials are ready for the final presentation, including any demos, visualizations, or prototypes.
+        - Your team has practiced the presentation and is prepared to answer questions about your work.

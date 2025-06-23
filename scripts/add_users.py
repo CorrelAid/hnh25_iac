@@ -5,6 +5,8 @@ from pathlib import Path
 
 SSH_KEY = "/home/jstet/.ssh/hnh25"
 SSH_HOST = "correlaid@hnh25.netbird.cloud"
+cwd = "dribdat"
+container_name = "dribdat-web"
 
 def execute_ssh_command(username, email):
     """Execute SSH command to create user via Docker"""
@@ -14,7 +16,7 @@ user = User("{username}","{email}")
 user_activation(user)
 print(f"User {username} activated successfully")"""
 
-    docker_command = f"cd dribdat && echo '{python_script}' | docker compose exec -T dribdat-web ./manage.py shell"
+    docker_command = f"cd {cwd} && echo '{python_script}' | docker compose exec -T {container_name} ./manage.py shell"
     ssh_command = [
         "ssh",
         "-i", SSH_KEY,
