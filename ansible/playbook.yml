@@ -47,6 +47,10 @@
       "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
       universal_auth_client_secret=universal_auth_client_secret,
       project_id=project_id, path=path, secret_name='DRIBDAT_DB_WALG_ENC', env_slug=env_slug) }}"
+    DRIBDAT_CADDY_HASH:   
+      "{{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
+      universal_auth_client_secret=universal_auth_client_secret,
+      project_id=project_id, path=path, secret_name='DRIBDAT_CADDY_HASH', env_slug=env_slug) }}"
   tasks:
     - name: Deploy Caddy 
       ansible.builtin.include_tasks: "tasks/deploy_caddy.yml"

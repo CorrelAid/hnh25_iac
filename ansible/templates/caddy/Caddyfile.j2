@@ -9,6 +9,9 @@
 }
 
 {{ fqdn }} {
+    {# basicauth {
+        participant {{ DRIBDAT_CADDY_HASH.value }}
+    } #}
     reverse_proxy dribdat-web:5000
 }
 
