@@ -47,8 +47,8 @@ variable "dns" {
   type = map(any)
   default = {
     zone                = "correlaid.org"
-    subdomain   = "hackbase"
-    subdomain_static   = "static.hackbase"
+    subdomain   = "dribdat"
+    subdomain_static   = "static.dribdat"
   }
 }
 

@@ -31,6 +31,7 @@ print(f"User {username} activated successfully")"""
             text=True,
             timeout=30 
         )
+        print(result.stderr)
         stderr_lines = result.stderr.strip().split('\n')
         stderr_lines = stderr_lines[3:-1]
         stderr_lines = [line for line in stderr_lines if line.strip()]

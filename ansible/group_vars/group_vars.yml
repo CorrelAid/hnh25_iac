@@ -1,6 +1,6 @@
 ---
-fqdn: hackbase.correlaid.org
-fqdn_static: static.hackbase.correlaid.org
+fqdn: dribdat.correlaid.org
+fqdn_static: static.dribdat.correlaid.org
 netbird_group_id: d18tdb3l0ubs73ara74g
 s3_bucket_name: hnh25
 s3_backupbucket_name: hnh25backup

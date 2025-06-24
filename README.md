@@ -1,7 +1,7 @@
 
-## Infrastrucure as Code Repository for [Hackbase](https://hackbase.correlaid.org/) - The Hackathon Challenge board of the [Hack and Harvest 2025](https://www.hackandharvest.farm/)
+## Infrastrucure as Code Repository for dribdat.correlaid.org - The Hackathon Challenge board of the [Hack and Harvest 2025](https://www.hackandharvest.farm/)
 
-- Hackbase is a self-hosted [dribdat](https://dribdat.cc/) instance. 
+- This is a self-hosted [dribdat](https://dribdat.cc/) instance. 
 - Find a user guide for dribdat [here](https://dribdat.cc/usage.html)
 
 ## User Information
