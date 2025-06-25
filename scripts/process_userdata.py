@@ -20,3 +20,5 @@ df = df.rename({"E-Mail Teilnehmer*in":"email"})[["username","email"]]
 print(df.head())
 
 print(len(df))
+
+df.write_csv(csv_path)
