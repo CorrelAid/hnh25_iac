@@ -11,10 +11,10 @@
     project_id: "c6b11c29-4e36-472e-93be-54130b65a987"
     path: "/"
     env_slug: "prod"
-    HETZNER_CORRELAID_DE_SMTP: >-
+    DRIBDAT_DRIBDAT_GOOGLE_APP_PW: >-
       {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
       universal_auth_client_secret=universal_auth_client_secret,
-      project_id=project_id, path=path, secret_name='HETZNER_CORRELAID_DE_SMTP', env_slug=env_slug) }}
+      project_id=project_id, path=path, secret_name='DRIBDAT_DRIBDAT_GOOGLE_APP_PW', env_slug=env_slug) }}
     DO_SPACES_ACCESS_ID: >-
       {{ lookup('infisical.vault.read_secrets', universal_auth_client_id=universal_auth_client_id,
       universal_auth_client_secret=universal_auth_client_secret,

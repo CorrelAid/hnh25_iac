@@ -14,7 +14,7 @@ def execute_ssh_command(username, email):
 
 user = User("{username}","{email}")
 user_activation(user)
-print(f"User {username} activated successfully")"""
+"""
 
     docker_command = f"cd {cwd} && echo '{python_script}' | docker compose exec -T {container_name} ./manage.py shell"
     ssh_command = [

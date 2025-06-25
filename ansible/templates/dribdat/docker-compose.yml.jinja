@@ -1,6 +1,6 @@
 services:
   dribdat-web:
-    image: dribdat/dribdat:v0.9.0
+    image: jstet/dribdat:latest
     container_name: dribdat-web
     hostname: dribdat-web
     restart: unless-stopped
@@ -22,12 +22,13 @@ services:
         - DRIBDAT_SOCIAL_LINKS=False
         - DRIBDAT_USER_APPROVE=True
 
-        - MAIL_SERVER=mail.your-server.de
+        - MAIL_SERVER=smtp.gmail.com
         - MAIL_PORT=587
-        - MAIL_USERNAME=mail@correlaid.de
-        - MAIL_PASSWORD={{ HETZNER_CORRELAID_DE_SMTP.value }}
-        - MAIL_DEFAULT_SENDER=mail@correlaid.de
-        - MAIL_USE_TLS=False
+        - MAIL_USERNAME=dribdat@correlaid.org
+        - MAIL_PASSWORD={{ DRIBDAT_DRIBDAT_GOOGLE_APP_PW.value }}
+        - MAIL_DEFAULT_SENDER=dribdat@correlaid.org
+        - MAIL_USE_SSL=False
+        - MAIL_USE_TLS=True
 
         - S3_KEY={{ DO_SPACES_ACCESS_ID.value }}
         - S3_SECRET={{ DO_SPACES_SECRET_KEY.value }}
