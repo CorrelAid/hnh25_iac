@@ -37,6 +37,8 @@ services:
         - S3_ENDPOINT=https://{{ s3_endpoint }}
         - MAX_CONTENT_LENGTH=20971520
 
+        - DRIBDAT_STYLE=https://{{ fqdn_static }}/overwrites.css
+
     volumes:
       - /home/{{ ansible_user }}/dribdat/datapackage.json:/app/datapackage.json:ro
       - /home/{{ ansible_user }}/dribdat/terms.md:/app/dribdat/templates/includes/terms.md:ro
