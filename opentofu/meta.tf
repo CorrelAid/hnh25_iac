@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.9.1"
+  required_version = "1.10.0"
   backend "s3" {
     endpoints = {
       s3 = "https://fra1.digitaloceanspaces.com"

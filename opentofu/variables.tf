@@ -49,6 +49,7 @@ variable "dns" {
     zone                = "correlaid.org"
     subdomain   = "dribdat"
     subdomain_static   = "static.dribdat"
+    subdomain_forward = "hackbase"
   }
 }
 

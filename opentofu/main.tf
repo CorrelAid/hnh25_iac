@@ -265,6 +265,13 @@ resource "hetznerdns_record" "static" {
   type    = "A"
 }
 
+resource "hetznerdns_record" "forward" {
+  zone_id = data.hetznerdns_zone.dns_zone.id
+  name    = var.dns.subdomain_forward
+  value   = hcloud_server.main.ipv4_address
+  type    = "A"
+}
+
 #################
 
 # writing data to files for ansible
@@ -284,6 +291,7 @@ resource "local_file" "group_vars" {
     {
       subdomain        = var.dns.subdomain
       subdomain_static = var.dns.subdomain_static
+      subdomain_forward = var.dns.subdomain_forward
       domain           = var.dns.zone
       netbird_group_id = restapi_object.group.api_data.id
       s3_bucket_name   = digitalocean_spaces_bucket.main.name
